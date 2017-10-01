@@ -1,11 +1,12 @@
 ########################
-#POPULACAO - MUNICÕPIOS#
+#POPULACAO - MUNIC√çPIOS#
 ########################
 
-##Autor: Gabriel Zanlorenssi
+##Code to generate a sequel of maps of Brazilian population by cities, from 1872 to 2016  
+
+##Author: Gabriel Zanlorenssi
 
 ##Libraries
-devtools::install_github("dgrtwo/gganimate")
 library(ggmap)
 library(dplyr)
 library(tm)
@@ -15,21 +16,19 @@ library(ggplot2)
 library(readxl)
 library(ggmap)
 library(reshape2)
-library(gganimate)
-library(gapminder)
 
 ##1872 a 1970
 
 url1<-"https://github.com/gabrielzanlorenssi/populacao_BR/raw/master/ipeadata%5B19-06-2017-01-43%5D.xls"
 download.file(url1, "ipeadata[19-06-2017-01-43].xls", mode="wb")
 
-pop_1872a70<-read_xls("ipeadata[19-06-2017-01-43].xls", sheet="SÈries")
+pop_1872a70<-read_xls("ipeadata[19-06-2017-01-43].xls", sheet="S√©ries")
 
-pop_1872long <- melt(pop_1872a70, id.vars = c("Sigla", "Codigo", "MunicÌpio"))
+pop_1872long <- melt(pop_1872a70, id.vars = c("Sigla", "Codigo", "Munic√≠pio"))
 pop_1872long$Codigo <- as.numeric(substr(pop_1872long$Codigo, 1,6))
 
 pop_1872long <- pop_1872long %>%
-  rename(uf=Sigla, municipio=MunicÌpio, cod_ibge=Codigo, populacao=value, ano=variable)
+  rename(uf=Sigla, municipio=Munic√≠pio, cod_ibge=Codigo, populacao=value, ano=variable)
 
 
 ##1980 a 2012
@@ -39,10 +38,10 @@ download.file(url2, "A132925189_79_76_80.csv")
 
 pop_80a12<-read.csv(file="A132925189_79_76_80.csv", header=TRUE, sep=";", skip=3)
 pop_80a12<-pop_80a12[1:5618,]
-pop_80a12$cod_ibge<-as.numeric(substr(pop_80a12$MunicÌpio, 1,6))
-pop_80a12$municipio<-(substr(pop_80a12$MunicÌpio, 8,100))
+pop_80a12$cod_ibge<-as.numeric(substr(pop_80a12$Munic√≠pio, 1,6))
+pop_80a12$municipio<-(substr(pop_80a12$Munic√≠pio, 8,100))
 
-pop_80long <- melt(pop_80a12, id.vars = c("MunicÌpio", "municipio", "cod_ibge"))
+pop_80long <- melt(pop_80a12, id.vars = c("Munic√≠pio", "municipio", "cod_ibge"))
 pop_80long$ano<-as.numeric(str_replace_all(pop_80long$variable, "X", ""))
 pop_80long$populacao<-as.numeric(str_replace_all(pop_80long$value, "-", ""))
 pop_80long<-pop_80long[c(2,3,6,7)]
@@ -60,16 +59,16 @@ download.file(url2014, "estimativa_TCU_2014_20170614.xls", mode="wb")
 download.file(url2015, "estimativa_TCU_2015_20170614.xls", mode="wb")
 download.file(url2016, "estimativa_TCU_2016_20170614.xls", mode="wb")
 
-pop_13<-read_xls("~/estimativa_2013_TCU_20170614.xls", sheet="MunicÌpios", skip=1)
+pop_13<-read_xls("~/estimativa_2013_TCU_20170614.xls", sheet="Munic√≠pios", skip=1)
 pop_13<-pop_13[1:5570,]
 pop_13$ano<-2013
-pop_14<-read_xls("~/estimativa_TCU_2014_20170614.xls", sheet="MunicÌpios", skip=1)
+pop_14<-read_xls("~/estimativa_TCU_2014_20170614.xls", sheet="Munic√≠pios", skip=1)
 pop_14<-pop_14[1:5570,]
 pop_14$ano<-2014
-pop_15<-read_xls("~/estimativa_TCU_2015_20170614.xls", sheet="MunicÌpios", skip=1)
+pop_15<-read_xls("~/estimativa_TCU_2015_20170614.xls", sheet="Munic√≠pios", skip=1)
 pop_15<-pop_15[1:5570,]
 pop_15$ano<-2015
-pop_16<-read_xls("~/estimativa_TCU_2016_20170614.xls", sheet="MunicÌpios", skip=1)
+pop_16<-read_xls("~/estimativa_TCU_2016_20170614.xls", sheet="Munic√≠pios", skip=1)
 pop_16<-pop_16[1:5570,]
 pop_16$ano<-2016
 
@@ -84,7 +83,7 @@ detach("package:reshape", unload=TRUE)
 library(dplyr)
 
 pop_13a16<-pop_13a16 %>%
-  rename(populacao=`POPULA«√O ESTIMADA`, municipio=`NOME DO MUNICÕPIO`, uf=UF)
+  rename(populacao=`POPULA√á√ÉO ESTIMADA`, municipio=`NOME DO MUNIC√çPIO`, uf=UF)
 
 
 ###########
@@ -113,11 +112,11 @@ populacao<-full_join(populacao, cod_merge, by="cod_ibge")
 
 #teste
 populacao22<-populacao %>%
-  filter(municipio=="Foz do IguaÁu")
+  filter(municipio=="Foz do Igua√ßu")
 
 theme_set(theme_bw())
 ggplot(data=populacao22, aes(x=ano, y=populacao)) + xlim(c(1940,2016)) + ylim(c(10000,350000)) +
-  geom_line() + geom_point() + labs(x="Ano", y="PopulaÁ„o", title="Foz do IguaÁu - PR")
+  geom_line() + geom_point() + labs(x="Ano", y="Popula√ß√£o", title="Foz do Igua√ßu - PR")
 ggsave("rn.png")
 
 ###########
@@ -132,20 +131,20 @@ geocode$id<-c(1:5570)
 geocode$municipio2<-geocode$municipio
 geocode$municipio2<-tolower(geocode$municipio2)
 geocode$municipio2<-removePunctuation(geocode$municipio2)
-geocode$municipio2<-str_replace_all(geocode$municipio2, "˙", "u")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "‚", "a")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "·", "a")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "„", "a")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "È", "e")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "Í", "e")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "Á", "c")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "Ì", "i")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√∫", "u")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√¢", "a")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√°", "a")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√£", "a")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√©", "e")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√™", "e")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√ß", "c")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√≠", "i")
 geocode$municipio2<-str_replace_all(geocode$municipio2, "\n", "")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "˚", "u")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "˙", "u")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "ı", "o")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "Û", "o")
-geocode$municipio2<-str_replace_all(geocode$municipio2, "Ù", "o")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√ª", "u")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√∫", "u")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√µ", "o")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√≥", "o")
+geocode$municipio2<-str_replace_all(geocode$municipio2, "√¥", "o")
 geocode$municipio2<-str_replace_all(geocode$municipio2, "'", "")
 
 geocode$uf2<-tolower(geocode$uf)
@@ -153,7 +152,7 @@ geocode$uf2<-tolower(geocode$uf)
 #endereco
 geocode$endereco<-paste(geocode$municipio2, geocode$uf2, "brasil", sep=", ")
 
-#dividir em trÍs partes
+#dividir em tr√™s partes
 #parte 1
 geocode1<-geocode[1:2400,]
 latlon1<-geocode(geocode1$endereco)
@@ -205,7 +204,7 @@ br<-get_map(brazil, source="google", maptype="terrain", zoom=4)
 
 geocode_final$latmed<-(as.numeric(geocode_final$lat)*as.numeric(geocode_final$populacao))/sum(as.numeric(geocode_final$populacao), na.rm=TRUE)
 geocode_final$lonmed<-(as.numeric(geocode_final$lon)*as.numeric(geocode_final$populacao))/sum(as.numeric(geocode_final$populacao), na.rm=TRUE)
-#Centro geogr·fico
+#Centro geogr√°fico
 px<-sum(geocode_final$lonmed, na.rm=TRUE)
 py<-sum(geocode_final$latmed, na.rm=TRUE)
 pxy<-data.frame(px, py)
@@ -251,7 +250,7 @@ pxy<-data.frame(px, py)
 br %>%
   ggmap() + geom_point(data=dfmap, aes(lon, lat), size=(dfmap$populacao/250000), alpha=0.3) +
   geom_point(data=pxy, aes(px, py), size=5, color="red", shape="+", stroke=7) + 
-  labs(x="", y="", title=anos[i], subtitle="PopulaÁ„o das cidades brasileiras") 
+  labs(x="", y="", title=anos[i], subtitle="Popula√ß√£o das cidades brasileiras") 
 ggsave(plot=last_plot(), filename = paste("mapa", anos[i], ".png", sep=""), dpi=500)
 }
 
