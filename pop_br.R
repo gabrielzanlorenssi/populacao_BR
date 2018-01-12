@@ -2,11 +2,17 @@
 #POPULACAO - MUNICÍPIOS#
 ########################
 
-##Code to generate a sequel of maps of Brazilian population by cities, from 1872 to 2016  
+## EDITANDO O CÓDIGO ##
+## NAO USAR ## 
+
+
+##Code to generate maps of Brazilian population by cities, from 1872 to 2016  
 
 ##Author: Gabriel Zanlorenssi
 
-##Libraries
+
+# Libraries ---------------------------------------------------------------
+
 library(ggmap)
 library(dplyr)
 library(tm)
@@ -17,33 +23,27 @@ library(readxl)
 library(ggmap)
 library(reshape2)
 
-##1872 a 1970
 
-url1<-"https://github.com/gabrielzanlorenssi/populacao_BR/raw/master/ipeadata%5B19-06-2017-01-43%5D.xls"
-download.file(url1, "ipeadata[19-06-2017-01-43].xls", mode="wb")
+# Data --------------------------------------------------------------------
 
-pop_1872a70<-read_xls("ipeadata[19-06-2017-01-43].xls", sheet="Séries")
+## From 1872 a 1970
 
-pop_1872long <- melt(pop_1872a70, id.vars = c("Sigla", "Codigo", "Município"))
-pop_1872long$Codigo <- as.numeric(substr(pop_1872long$Codigo, 1,6))
-
-pop_1872long <- pop_1872long %>%
+pop_1 <- read_xls("./data/ipeadata[19-06-2017-01-43].xls", sheet="Séries") %>% 
+  melt(id.vars = c("Sigla", "Codigo", "Município")) %>% 
+  mutate(Codigo = as.numeric(substr(Codigo, 1,6))) %>% 
   rename(uf=Sigla, municipio=Município, cod_ibge=Codigo, populacao=value, ano=variable)
 
+## From 1980 a 2012
 
-##1980 a 2012
-
-url2<-"https://raw.githubusercontent.com/gabrielzanlorenssi/populacao_BR/master/A132925189_79_76_80.csv"
-download.file(url2, "A132925189_79_76_80.csv")
-
-pop_80a12<-read.csv(file="A132925189_79_76_80.csv", header=TRUE, sep=";", skip=3)
-pop_80a12<-pop_80a12[1:5618,]
-pop_80a12$cod_ibge<-as.numeric(substr(pop_80a12$Município, 1,6))
-pop_80a12$municipio<-(substr(pop_80a12$Município, 8,100))
-
-pop_80long <- melt(pop_80a12, id.vars = c("Município", "municipio", "cod_ibge"))
-pop_80long$ano<-as.numeric(str_replace_all(pop_80long$variable, "X", ""))
-pop_80long$populacao<-as.numeric(str_replace_all(pop_80long$value, "-", ""))
+pop_2 <- read.csv(file="./data/A132925189_79_76_80.csv", header=TRUE, sep=";", 
+                  skip=3, fileEncoding = "latin1")[1:5618,] %>% 
+  mutate(cod_ibge = substr(Município, 1,6),
+         municipio = substr(Município, 8,100)) %>% 
+  melt(id.vars = c("Município", "municipio", "cod_ibge")) %>% 
+  mutate(ano = as.numeric(str_replace_all(variable, "X", "")),
+         populacao = as.numeric(str_replace_all(value, "-", ""))) %>% 
+  select(.[2])
+         
 pop_80long<-pop_80long[c(2,3,6,7)]
 
 
